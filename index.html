@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thuisbatterij Intake (voorbeeld)</title>
+  <style>
+    :root{
+      --bg:#0b0f19;--card:#121a2a;--muted:#a9b3c7;--text:#eef2ff;--line:#25304a;--accent:#7c5cff;
+      --ok:#27c07d;--warn:#ffcc66;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:linear-gradient(180deg,#0b0f19 0%,#0d1220 60%,#0b0f19 100%);color:var(--text)}
+    header{padding:28px 16px 10px;max-width:980px;margin:0 auto}
+    h1{margin:0 0 8px;font-size:26px;letter-spacing:.2px}
+    p{margin:0;color:var(--muted);line-height:1.5}
+    main{max-width:980px;margin:0 auto;padding:16px 16px 40px}
+    .grid{display:grid;gap:14px}
+    .card{background:rgba(18,26,42,.92);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
+    .section-title h2{margin:0;font-size:16px}
+    .badge{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:4px 8px;border-radius:999px}
+    .row{display:grid;grid-template-columns:1fr;gap:10px}
+    @media (min-width:780px){
+      .row.two{grid-template-columns:1fr 1fr}
+      .row.three{grid-template-columns:1fr 1fr 1fr}
+    }
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type="text"],input[type="number"],select,textarea{
+      width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      background:#0c1323;color:var(--text);outline:none
+    }
+    textarea{min-height:84px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:rgba(124,92,255,.65);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
+    .choices{display:flex;flex-wrap:wrap;gap:10px}
+    .choice{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0c1323}
+    .choice input{accent-color:var(--accent)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+    button{
+      border:1px solid rgba(124,92,255,.45);background:linear-gradient(180deg,rgba(124,92,255,.35),rgba(124,92,255,.15));
+      color:var(--text);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600
+    }
+    button.secondary{border:1px solid var(--line);background:#0c1323;color:var(--muted)}
+    button:active{transform:translateY(1px)}
+    .hint{font-size:12px;color:var(--muted);line-height:1.45}
+    .footer-note{margin-top:14px;color:var(--muted);font-size:12px}
+    pre{margin:0;background:#0c1323;border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;color:#dbe7ff}
+    .pill{display:inline-flex;align-items:center;gap:8px}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+    .dot.ok{background:var(--ok)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Thuisbatterij intakeformulier (voorbeeld)</h1>
+    <p>Vul de vragen zo goed mogelijk in. Na het invullen kun je onderaan een JSON-samenvatting kopiëren (handig voor intern gebruik of AI).</p>
+  </header>
+
+  <main>
+    <form id="intakeForm" class="grid" autocomplete="on">
+
+      <!-- A. Klant & locatie -->
+      <section class="card">
+        <div class="section-title">
+          <h2>A. Klant & locatie</h2>
+          <span class="badge">Basisgegevens</span>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label>1. Type klant</label>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="klant_type" value="Particulier" /> Particulier</label>
+              <label class="choice"><input type="radio" name="klant_type" value="Zakelijk" /> Zakelijk</label>
+            </div>
+          </div>
+          <div>
+            <label>2. Locatie installatie</label>
+            <select name="locatie_type">
+              <option value="">Kies…</option>
+              <option>Woning</option>
+              <option>Bedrijfspand</option>
+              <option>Agrarisch</option>
+              <option>VvE</option>
+              <option>Overig</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row three">
+          <div>
+            <label>3. Netbeheerder</label>
+            <input type="text" name="netbeheerder" placeholder="Bijv. Liander / Enexis / Stedin" />
+          </div>
+          <div>
+            <label>4. Aansluiting (fase)</label>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="fase" value="1-fase" /> 1-fase</label>
+              <label class="choice"><input type="radio" name="fase" value="3-fase" /> 3-fase</label>
+              <label class="choice"><input type="radio" name="fase" value="Onbekend" /> Onbekend</label>
+            </div>
+          </div>
+          <div>
+            <label>5. Hoofdaansluiting</label>
+            <input type="text" name="hoofdaansluiting" placeholder="Bijv. 3x25A" />
+          </div>
+        </div>
+      </section>
+
+      <!-- B. Huidige PV-installatie -->
+      <section class="card">
+        <div class="section-title">
+          <h2>B. Huidige PV-installatie</h2>
+          <span class="badge">Zonnepanelen & omvormer</span>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label>6. Is er al een PV-installatie?</label>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="pv_aanwezig" value="Ja" /> Ja</label>
+              <label class="choice"><input type="radio" name="pv_aanwezig" value="Nee" /> Nee</label>
+            </div>
+          </div>
+          <div>
+            <label>7. Totaal vermogen zonnepanelen (kWp)</label>
+            <input type="number" step="0.1" min="0" name="pv_kwp" placeholder="Bijv. 8.4" />
+          </div>
+        </div>
+
+        <div class="row three">
+          <div>
+            <label>8. Aantal omvormers</label>
+            <input type="number" step="1" min="0" name="omvormers_aantal" placeholder="Bijv. 1" />
+          </div>
+          <div>
+            <label>9. Merk & type omvormer(s)</label>
+            <input type="text" name="omvormer_type" placeholder="Bijv. SMA Sunny Boy 5.0" />
+          </div>
+          <div>
+            <label>10. Bouwjaar PV-installatie</label>
+            <input type="number" step="1" min="1990" max="2100" name="pv_bouwjaar" placeholder="Bijv. 2022" />
+          </div>
+        </div>
+      </section>
+
+      <!-- C. Jaarverbruik & doel -->
+      <section class="card">
+        <div class="section-title">
+          <h2>C. Verbruik & doel</h2>
+          <span class="badge">Business case</span>
+        </div>
+
+        <div class="row three">
+          <div>
+            <label>11. Jaarlijks elektriciteitsverbruik (kWh)</label>
+            <input type="number" step="1" min="0" name="jaarverbruik_kwh" placeholder="Bijv. 4500" />
+          </div>
+          <div>
+            <label>12. Jaarlijkse teruglevering (kWh)</label>
+            <input type="number" step="1" min="0" name="teruglevering_kwh" placeholder="Bijv. 2200" />
+          </div>
+          <div>
+            <label>13. Dynamisch energiecontract?</label>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="dynamisch_contract" value="Ja" /> Ja</label>
+              <label class="choice"><input type="radio" name="dynamisch_contract" value="Nee" /> Nee</label>
+              <label class="choice"><input type="radio" name="dynamisch_contract" value="Onbekend" /> Onbekend</label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label>14. Hoofddoel batterij (meerdere mogelijk)</label>
+          <div class="choices">
+            <label class="choice"><input type="checkbox" name="doel" value="Zelfconsumptie verhogen" /> Zelfconsumptie verhogen</label>
+            <label class="choice"><input type="checkbox" name="doel" value="Terugleverkosten beperken" /> Terugleverkosten beperken</label>
+            <label class="choice"><input type="checkbox" name="doel" value="Peak shaving" /> Peak shaving</label>
+            <label class="choice"><input type="checkbox" name="doel" value="Noodstroomvoorziening" /> Noodstroomvoorziening</label>
+            <label class="choice"><input type="checkbox" name="doel" value="Handelen (dynamisch/onbalans)" /> Handelen (dynamisch/onbalans)</label>
+            <label class="choice"><input type="checkbox" name="doel" value="Netcongestie" /> Netcongestie</label>
+          </div>
+          <div class="hint" style="margin-top:8px;">
+            Tip: Als je “noodstroom” kiest, geef dan ook aan welke groepen minimaal moeten blijven werken (koelkast, internet, warmtepomp, etc.).
+          </div>
+        </div>
+      </section>
+
+      <!-- D. Verbruiksprofiel -->
+      <section class="card">
+        <div class="section-title">
+          <h2>D. Verbruiksprofiel</h2>
+          <span class="badge">Pieken & grootverbruikers</span>
+        </div>
+
+        <div class="row two">
+          <div>
+            <label>15. Wanneer is het grootste verbruik?</label>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="verbruik_moment" value="Overdag" /> Overdag</label>
+              <label class="choice"><input type="radio" name="verbruik_moment" value="Avond" /> Avond</label>
+              <label class="choice"><input type="radio" name="verbruik_moment" value="Nacht" /> Nacht</label>
+              <label class="choice"><input type="radio" name="verbruik_moment" value="Gelijkmatig" /> Gelijkmatig</label>
+            </div>
+          </div>
+          <div>
+            <label>16. Grootverbruikers (meerdere mogelijk)</label>
+            <div class="choices">
+              <label class="choice"><input type="checkbox" name="grootverbruikers" value="Warmtepomp" /> Warmtepomp</label>
+              <label class="choice"><input type="checkbox" name="grootverbruikers" value="EV-lader(s)" /> EV-lader(s)</label>
+              <label class="choice"><input type="checkbox" name="grootverbruikers" value="Airco's" /> Airco's</label>
+              <label class="choice"><input type="checkbox" name="grootverbruikers" value="Machines (zakelijk)" /> Machines (zakelijk)</label>
+              <label class="choice"><input type="checkbox" name="grootverbruikers" value="Boiler/elektrische verwarming" /> Boiler/elektrische verwarming</label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label>Vermogens / extra toelichting (optioneel)</label>
+          <textarea name="grootverbruikers_toelichting" placeholder="Bijv. EV-lader 11 kW, warmtepomp 3 kW, machines: …"></textarea>
+        </div>
+      </section>
+
+      <!-- E. Toekomst -->
+      <section class="card">
+        <div class="section-title">
+          <h2>E. Toekomstverwachting</h2>
+          <span class="badge">Uitbreidingen</span>
+        </div>
+
+        <div>
+          <label>17. Verwachte uitbreidingen binnen 2 jaar (meerdere mogelijk)</label>
+          <div class="choices">
+            <label class="choice"><input type="checkbox" name="uitbreidingen" value="Extra zonnepanelen" /> Extra zonnepanelen</label>
+            <label class="choice"><input type="checkbox" name="uitbreidingen" value="Elektrische auto" /> Elektrische auto</label>
+            <label class="choice"><input type="checkbox" name="uitbreidingen" value="Warmtepomp" /> Warmtepomp</label>
+            <label class="choice"><input type="checkbox" name="uitbreidingen" value="Bedrijfsuitbreiding" /> Bedrijfsuitbreiding</label>
+            <label class="choice"><input type="checkbox" name="uitbreidingen" value="Onbekend" /> Onbekend</label>
+          </div>
+        </div>
+
+        <div>
+          <label>Toelichting (optioneel)</label>
+          <textarea name="uitbreidingen_toelichting" placeholder="Bijv. 12 panelen extra in Q3, tweede EV in 2027, etc."></textarea>
+        </div>
+      </section>
+
+      <!-- F. Techniek -->
+      <section class="card">
+        <div class="section-title">
+          <h2>F. Technische randvoorwaarden</h2>
+          <span class="badge">Installatie</span>
+        </div>
+
+        <div class="row three">
+          <div>
+            <label>18. Plaats batterij</label>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="plaats_batterij" value="Binnen" /> Binnen</label>
+              <label class="choice"><input type="radio" name="plaats_batterij" value="Buiten" /> Buiten</label>
+              <label class="choice"><input type="radio" name="plaats_batterij" value="Onbekend" /> Onbekend</label>
+            </div>
+          </div>
+          <div>
+            <label>19. Maximale afmetingen (indicatie)</label>
+            <input type="text" name="max_afmetingen" placeholder="Bijv. 120x80x30 cm" />
+          </div>
+          <div>
+            <label>20. Afstand meterkast ↔ batterij (m)</label>
+            <input type="number" step="0.5" min="0" name="afstand_meterkast_m" placeholder="Bijv. 8" />
+          </div>
+        </div>
+
+        <div>
+          <label>Extra installatienotities (optioneel)</label>
+          <textarea name="installatie_notities" placeholder="Bijv. batterij in garage, meterkast in hal, kabelroute via kruipruimte."></textarea>
+        </div>
+      </section>
+
+      <!-- G. Budget -->
+      <section class="card">
+        <div class="section-title">
+          <h2>G. Budget & besluitvorming</h2>
+          <span class="badge">Commercieel</span>
+        </div>
+
+        <div class="row three">
+          <div>
+            <label>21. Budgetrange</label>
+            <select name="budget_range">
+              <option value="">Kies…</option>
+              <option>€ 2.000 – € 5.000</option>
+              <option>€ 5.000 – € 10.000</option>
+              <option>€ 10.000 – € 20.000</option>
+              <option>€ 20.000+</option>
+              <option>Onbekend</option>
+            </select>
+          </div>
+          <div>
+            <label>22. Gewenste terugverdientijd</label>
+            <input type="text" name="terugverdientijd" placeholder="Bijv. 6–8 jaar / niet belangrijk" />
+          </div>
+          <div>
+            <label>23. Wie beslist?</label>
+            <input type="text" name="beslisser" placeholder="Bijv. eigenaar / bestuur / partner" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Output -->
+      <section class="card">
+        <div class="section-title">
+          <h2>Samenvatting</h2>
+          <span class="badge pill"><span id="statusDot" class="dot"></span><span id="statusText">Nog niet gecontroleerd</span></span>
+        </div>
+
+        <div class="actions">
+          <div class="hint">Klik op “Genereer JSON” om een interne samenvatting te maken.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="button" id="btnGenerate">Genereer JSON</button>
+            <button type="button" class="secondary" id="btnCopy">Kopieer JSON</button>
+            <button type="reset" class="secondary" id="btnReset">Leegmaken</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="row two">
+          <div>
+            <label>JSON output (intern)</label>
+            <pre id="jsonOut">{
+  "tip": "Vul het formulier in en klik op 'Genereer JSON'."
+}</pre>
+          </div>
+          <div>
+            <label>Ontbrekende kerninfo (checklist)</label>
+            <pre id="missingOut">Klik op “Genereer JSON” om te zien wat er nog mist.</pre>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          Dit is een voorbeeldpagina. Je kunt dit later koppelen aan n8n / CRM / e-mail intake en de JSON automatisch laten analyseren door ChatGPT.
+        </div>
+      </section>
+
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('intakeForm');
+    const jsonOut = document.getElementById('jsonOut');
+    const missingOut = document.getElementById('missingOut');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+
+    function getFormData() {
+      const fd = new FormData(form);
+      const data = {};
+
+      // Normal fields
+      for (const [key, value] of fd.entries()) {
+        // Collect multi-values (checkbox groups)
+        if (data[key] !== undefined) {
+          if (!Array.isArray(data[key])) data[key] = [data[key]];
+          data[key].push(value);
+        } else {
+          data[key] = value;
+        }
+      }
+
+      // Ensure checkbox groups exist as arrays even if empty
+      ['doel','grootverbruikers','uitbreidingen'].forEach(k => {
+        if (data[k] === undefined) data[k] = [];
+        if (!Array.isArray(data[k])) data[k] = [data[k]];
+      });
+
+      // Numeric cleanup (optional)
+      ['pv_kwp','omvormers_aantal','pv_bouwjaar','jaarverbruik_kwh','teruglevering_kwh','afstand_meterkast_m'].forEach(k => {
+        if (data[k] === '') data[k] = null;
+        if (data[k] !== null && data[k] !== undefined) {
+          const n = Number(data[k]);
+          if (!Number.isNaN(n)) data[k] = n;
+        }
+      });
+
+      return data;
+    }
+
+    function missingCore(data){
+      const missing = [];
+
+      // Core fields (practical minimum to start sizing)
+      if (!data.klant_type) missing.push('Type klant');
+      if (!data.locatie_type) missing.push('Locatie installatie');
+      if (!data.fase) missing.push('1-fase of 3-fase');
+      if (!data.hoofdaansluiting) missing.push('Hoofdaansluiting (bijv. 3x25A)');
+
+      // PV & energy profile
+      if (!data.pv_aanwezig) missing.push('PV aanwezig (ja/nee)');
+      if (data.pv_aanwezig === 'Ja') {
+        if (data.pv_kwp === null || data.pv_kwp === undefined) missing.push('PV-vermogen (kWp)');
+        if (!data.omvormer_type) missing.push('Omvormer merk/type');
+      }
+
+      if (data.jaarverbruik_kwh === null || data.jaarverbruik_kwh === undefined) missing.push('Jaarverbruik (kWh)');
+      if (!Array.isArray(data.doel) || data.doel.length === 0) missing.push('Doel batterij (minimaal 1)');
+
+      // Location/installation is often needed early
+      if (!data.plaats_batterij) missing.push('Plaats batterij (binnen/buiten)');
+      if (data.afstand_meterkast_m === null || data.afstand_meterkast_m === undefined) missing.push('Afstand meterkast ↔ batterij (m)');
+
+      return missing;
+    }
+
+    function setStatus(missingCount){
+      if (missingCount === 0) {
+        statusDot.classList.add('ok');
+        statusText.textContent = 'Kerninfo compleet';
+      } else {
+        statusDot.classList.remove('ok');
+        statusText.textContent = `Mist nog ${missingCount} kernpunten`;
+      }
+    }
+
+    document.getElementById('btnGenerate').addEventListener('click', () => {
+      const data = getFormData();
+      const missing = missingCore(data);
+
+      jsonOut.textContent = JSON.stringify({
+        intake_versie: '1.0',
+        gegenereerd_op: new Date().toISOString(),
+        data
+      }, null, 2);
+
+      missingOut.textContent = missing.length
+        ? ('- ' + missing.join('\n- '))
+        : 'Geen ontbrekende kernpunten ✅';
+
+      setStatus(missing.length);
+    });
+
+    document.getElementById('btnCopy').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(jsonOut.textContent);
+        statusText.textContent = 'JSON gekopieerd';
+      } catch {
+        statusText.textContent = 'Kopiëren niet gelukt (browser)';
+      }
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      jsonOut.textContent = '{\n  "tip": "Vul het formulier in en klik op \'Genereer JSON\'."\n}';
+      missingOut.textContent = 'Klik op “Genereer JSON” om te zien wat er nog mist.';
+      statusDot.classList.remove('ok');
+      statusText.textContent = 'Nog niet gecontroleerd';
+    });
+  </script>
+</body>
+</html>
